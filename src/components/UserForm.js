@@ -1,35 +1,37 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { CREATE_USER, USERS } from "../queries";
-import { Form, Button, Row, Col } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
+import { Row, Col, Button, Form } from "react-bootstrap";
 
-const UserForm = (props) => {
+const UserForm = ({ setError, setShowForm }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [role, setRole] = useState("USER");
-  const history = useHistory();
-
   const [createUser] = useMutation(CREATE_USER, {
     onError: (error) => {
-      props.setError(error.graphQLErrors[0].message, "danger");
+      setError(error.graphQLErrors[0].message, "danger");
     },
     refetchQueries: [{ query: USERS }],
     onCompleted: () => {
+      setShowForm(false);
       setUsername("");
       setPassword("");
       setName("");
       setRole("USER");
-      history.push("/users");
     },
   });
-
   const submit = async (event) => {
     event.preventDefault();
     createUser({ variables: { username, password, name, role } });
   };
-
+  const cancel = () => {
+    setShowForm(false);
+    setUsername("");
+    setPassword("");
+    setName("");
+    setRole("USER");
+  };
   return (
     <div>
       <Form style={{ marginTop: 24 }} onSubmit={submit}>
@@ -88,12 +90,7 @@ const UserForm = (props) => {
           <Button variant="primary" type="submit">
             Create User
           </Button>
-          <Button
-            style={{ marginLeft: 4 }}
-            variant="danger"
-            as={Link}
-            to="/users"
-          >
+          <Button style={{ marginLeft: 4 }} variant="danger" onClick={cancel}>
             Cancel
           </Button>
         </div>

@@ -2,7 +2,7 @@ import React from "react";
 import { PLACES } from "../queries";
 import { useQuery } from "@apollo/client";
 import { Table, Spinner } from "react-bootstrap";
-import HeadContainer from "../components/HeadContainer";
+import ToolBar from "../components/ToolBar";
 
 const Places = () => {
   const result = useQuery(PLACES);
@@ -18,7 +18,7 @@ const Places = () => {
   return (
     <>
       <div>
-        <HeadContainer title="Places" addLink="/" />
+        <ToolBar title="Places" />
 
         <Table striped bordered hover>
           <thead>

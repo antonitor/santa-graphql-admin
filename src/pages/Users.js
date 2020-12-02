@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import { USERS, DELETE_USER } from "../queries";
 import { useQuery, useMutation } from "@apollo/client";
 import { Table, Spinner, Button } from "react-bootstrap";
-import HeadContainer from "../components/HeadContainer";
+import ToolBar from "../components/ToolBar";
 import UserForm from "../components/UserForm";
 
 const Users = ({ setError }) => {
-  const [showForm, setShowForm] = useState(false);
   const result = useQuery(USERS);
   const [delUser] = useMutation(DELETE_USER, {
     onError: (error) => {
@@ -14,6 +13,7 @@ const Users = ({ setError }) => {
     },
     refetchQueries: [{ query: USERS }],
   });
+  const [showForm, setShowForm] = useState(false);
 
   if (result.loading) {
     return (
@@ -24,15 +24,18 @@ const Users = ({ setError }) => {
   }
 
   const deleteUser = ({ id }) => {
-    delUser({ variables: { id } });
+    if (window.confirm(`Are you sure to delete user ${id} ?`))
+      delUser({ variables: { id } });
   };
 
   return (
     <>
       <div>
-        <HeadContainer title="Users" setShowForm={setShowForm}>
-          {showForm ? <UserForm /> : null}
-        </HeadContainer>
+        <ToolBar title="Users" setShowForm={setShowForm} showForm={showForm}>
+          {showForm ? (
+            <UserForm setError={setError} setShowForm={setShowForm} />
+          ) : null}
+        </ToolBar>
         <Table striped bordered hover>
           <thead>
             <tr>
